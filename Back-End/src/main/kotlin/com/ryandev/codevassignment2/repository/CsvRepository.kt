@@ -12,19 +12,17 @@ class CsvRepository (
         val conn = dataSource.connection
         val statement = conn.prepareStatement("INSERT INTO invoices (invoiceNo, stockCode, description, quantity, invoiceDate, unitPrice, customerID, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
         invoiceList.forEach { data ->
-            statement.setInt(1, data.invoice_no)
-            statement.setString(2, data.stock_code)
+            statement.setInt(1, data.invoiceNo)
+            statement.setString(2, data.stockCode)
             statement.setString(3, data.description)
             statement.setInt(4, data.quantity)
-            statement.setString(5, data.invoice_date)
-            statement.setDouble(6, data.unit_price)
-            statement.setInt(7, data.customer_id)
+            statement.setString(5, data.invoiceDate)
+            statement.setDouble(6, data.unitPrice)
+            statement.setInt(7, data.customerID)
             statement.setString(8, data.country)
             statement.executeUpdate()
         }
         statement.close()
         conn.close()
     }
-
-
 }

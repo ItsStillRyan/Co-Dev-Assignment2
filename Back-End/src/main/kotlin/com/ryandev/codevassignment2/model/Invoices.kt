@@ -1,22 +1,25 @@
 package com.ryandev.codevassignment2.model
 
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.util.*
 @Entity
 @Table(name = "invoices")
 data class Invoices(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        var id: Long? = null,
-        val invoice_no: Int,
-        val stock_code: String,
+        @Column(name = "id")
+        val id: Int? = null,
+        val invoiceNo: Int,
+        val stockCode: String,
         val description: String,
         val quantity: Int,
-        val invoice_date: String,
-        val unit_price: Double,
-        val customer_id: Int,
+        val invoiceDate: String,
+        val unitPrice: Double,
+        val customerID: Int,
         val country: String
 )

@@ -1,6 +1,7 @@
 package com.ryandev.codevassignment2.services
 
 import com.ryandev.codevassignment2.model.Invoices
+import com.ryandev.codevassignment2.repository.CsvRepository
 import com.ryandev.codevassignment2.repository.InvoiceRepository
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
@@ -11,15 +12,14 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
-import kotlin.collections.ArrayList
 
 @Service
-class CsvService(
-    val invoiceRepository: InvoiceRepository
+class CSVService(
+    private val csvRepository: CsvRepository
 ) {
     fun uploadCsv(file: MultipartFile) {
-        val invoices = invoiceRepository.saveAll(csvToInvoices(file.inputStream))
-        println("Uploaded ${invoices.size} invoices")
+        val csvDataList = csvToInvoices(file.inputStream)
+        csvRepository.insertCsvData(csvDataList)
     }
 
     fun csvToInvoices(inS: InputStream): List<Invoices> {
@@ -35,11 +35,13 @@ class CsvService(
                     .setIgnoreSurroundingSpaces(true)
                     .setTrim(true)
                     .build()).use { csvParser ->
+
                     val ivc = ArrayList<Invoices>()
                     val csvRecords = csvParser.records
+
                     for (csvRecord in csvRecords) {
                         val invoice = Invoices(
-                            null,
+                            csvRecord["id"].toInt(),
                             csvRecord["invoiceNo"].toInt(),
                             csvRecord["stockCode"],
                             csvRecord["description"],
