@@ -41,7 +41,7 @@ class CSVService(
 
                     for (csvRecord in csvRecords) {
                         val invoice = Invoices(
-                            csvRecord["id"].toLong(),
+                            csvRecord["id"].toInt(),
                             csvRecord["invoiceNo"].toInt(),
                             csvRecord["stockCode"],
                             csvRecord["description"],

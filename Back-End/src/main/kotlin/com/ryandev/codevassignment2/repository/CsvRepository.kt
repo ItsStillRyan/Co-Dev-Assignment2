@@ -10,7 +10,7 @@ class CsvRepository (
 ) {
     fun insertCsvData(invoiceList: List<Invoices>) {
         val conn = dataSource.connection
-        val statement = conn.prepareStatement("INSERT INTO invoices (invoiceNo, stockCode, description, quantity, invoiceDate, unitPrice, customerID,country) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+        val statement = conn.prepareStatement("INSERT INTO invoices (invoiceNo, stockCode, description, quantity, invoiceDate, unitPrice, customerID, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
         invoiceList.forEach { data ->
             statement.setInt(1, data.invoiceNo)
             statement.setString(2, data.stockCode)

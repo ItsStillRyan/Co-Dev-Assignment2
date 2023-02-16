@@ -7,14 +7,13 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.util.*
-
 @Entity
 @Table(name = "invoices")
 data class Invoices(
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "id")
-        val id: Long,
+        val id: Int? = null,
         val invoiceNo: Int,
         val stockCode: String,
         val description: String,
