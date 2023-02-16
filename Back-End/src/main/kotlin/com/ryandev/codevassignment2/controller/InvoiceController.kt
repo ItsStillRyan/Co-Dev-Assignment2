@@ -1,5 +1,5 @@
 package com.ryandev.codevassignment2.controller
-import com.ryandev.codevassignment2.services.CSVService
+import com.ryandev.codevassignment2.services.CsvService
 import com.ryandev.codevassignment2.services.InvoiceServices
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 class InvoiceController(
     val invoiceServices: InvoiceServices,
-    val csvService: CSVService
+    val csvService: CsvService
 ){
 
     @GetMapping("/")
