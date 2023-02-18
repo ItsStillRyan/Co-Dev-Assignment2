@@ -17,10 +17,8 @@ class CsvService(private val invoiceRepository: InvoiceRepository) {
 
     suspend fun parseCsv(file: MultipartFile): Flow<Int> = flow {
         val reader = CSVReaderBuilder(InputStreamReader(file.inputStream)).withSkipLines(1).build()
-
         var progress = 0
         var count = 0
-
         while (true) {
             val nextLine = reader.readNext() ?: break
 
@@ -35,7 +33,6 @@ class CsvService(private val invoiceRepository: InvoiceRepository) {
                 customerID = nextLine[6],
                 country = nextLine[7]
             )
-
             invoiceRepository.save(invoice)
             count++
 
@@ -45,7 +42,6 @@ class CsvService(private val invoiceRepository: InvoiceRepository) {
                 emit(progress)
             }
         }
-
         emit(100)
     }
 
