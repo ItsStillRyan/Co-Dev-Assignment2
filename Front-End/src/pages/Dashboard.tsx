@@ -1,9 +1,19 @@
-import React from 'react'
 
-type Props = {}
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import TableComp from "../components/TableComp";
+
+type Props = {};
+
+
 
 export default function Dashboard({}: Props) {
+ 
+
   return (
-    <div>Dashboard</div>
-  )
+    <div>
+      <TableComp />
+
+    </div>
+  );
 }
