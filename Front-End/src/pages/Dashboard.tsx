@@ -13,7 +13,6 @@ export default function Dashboard({}: Props) {
 
   return (
     <div>
-      <UploadProgressComp />
       <TableComp />
 
     </div>
