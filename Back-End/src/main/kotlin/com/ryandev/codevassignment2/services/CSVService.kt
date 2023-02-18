@@ -6,7 +6,8 @@ import com.ryandev.codevassignment2.repository.InvoiceRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.InputStreamReader
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -14,10 +15,11 @@ import java.time.format.DateTimeFormatter
 @Service
 class CsvService(private val invoiceRepository: InvoiceRepository) {
 
-    suspend fun parseCsv(file: MultipartFile) {
+    suspend fun parseCsv(file: MultipartFile): Flow<Int> = flow {
         val reader = CSVReaderBuilder(InputStreamReader(file.inputStream)).withSkipLines(1).build()
 
-        val invoices = mutableListOf<Deferred<Invoices>>()
+        var progress = 0
+        var count = 0
 
         while (true) {
             val nextLine = reader.readNext() ?: break
@@ -34,19 +36,17 @@ class CsvService(private val invoiceRepository: InvoiceRepository) {
                 country = nextLine[7]
             )
 
-            val deferredInvoice = GlobalScope.async {
-                invoiceRepository.save(invoice)
-            }
+            invoiceRepository.save(invoice)
+            count++
 
-            invoices.add(deferredInvoice)
-
-            if (invoices.size >= 10000) {
-                invoices.awaitAll()
-                invoices.clear()
+            if (count >= 10000) {
+                progress += 10
+                count = 0
+                emit(progress)
             }
         }
 
-        invoices.awaitAll()
+        emit(100)
     }
 
     fun getCsvData(page: Int, pageSize: Int): List<Invoices> {

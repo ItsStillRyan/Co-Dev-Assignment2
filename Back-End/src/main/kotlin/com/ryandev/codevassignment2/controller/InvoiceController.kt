@@ -1,8 +1,9 @@
 package com.ryandev.codevassignment2.controller
 import com.ryandev.codevassignment2.model.Invoices
-import com.ryandev.codevassignment2.repository.InvoiceRepository
 import com.ryandev.codevassignment2.services.CsvService
-import kotlinx.coroutines.coroutineScope
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -31,9 +32,13 @@ class InvoiceController(
     }
 
     @PostMapping("/upload")
-    suspend fun uploadCSV(@RequestParam("file") file: MultipartFile) {
-        coroutineScope {
-            csvService.parseCsv(file)
+    suspend fun uploadCSV(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+        csvService.parseCsv(file).collect { progress ->
+            val headers = HttpHeaders()
+            headers.set("X-Progress", progress.toString())
+            ResponseEntity("", headers, HttpStatus.OK)
         }
+
+        return ResponseEntity.ok("File uploaded successfully.")
     }
 }
