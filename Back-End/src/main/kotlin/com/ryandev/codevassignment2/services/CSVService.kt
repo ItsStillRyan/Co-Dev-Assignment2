@@ -40,7 +40,7 @@ class CsvService(private val invoiceRepository: InvoiceRepository) {
 
             invoices.add(deferredInvoice)
 
-            if (invoices.size >= 1000) {
+            if (invoices.size >= 10000) {
                 invoices.awaitAll()
                 invoices.clear()
             }
@@ -53,6 +53,10 @@ class CsvService(private val invoiceRepository: InvoiceRepository) {
         val pageable = PageRequest.of(page, pageSize)
         val csvDataPage = invoiceRepository.findAll(pageable)
         return csvDataPage.content
+    }
+
+    fun getAllCsvData(): List<Invoices> {
+        return invoiceRepository.findAll()
     }
 }
 
