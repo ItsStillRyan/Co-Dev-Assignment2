@@ -1,7 +1,7 @@
 package com.ryandev.codevassignment2.controller
-import com.ryandev.codevassignment2.services.CSVService
-import com.ryandev.codevassignment2.services.InvoiceServices
-import org.springframework.http.ResponseEntity
+import com.ryandev.codevassignment2.model.Invoices
+import com.ryandev.codevassignment2.services.CsvService
+import kotlinx.coroutines.coroutineScope
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,16 +13,21 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("/csv")
 @RestController
 class InvoiceController(
-    val invoiceServices: InvoiceServices,
-    val csvService: CSVService
+    val csvService: CsvService
 ){
 
-    @GetMapping("/")
-    fun getAllInvoice() = invoiceServices.getAll()
+    @GetMapping
+    fun getCsvData(
+        @RequestParam("page") page:Int,
+        @RequestParam("pageSize") pageSize: Int
+    ): List<Invoices> {
+        return csvService.getCsvData(page,pageSize)
+    }
 
     @PostMapping("/upload")
-    fun uploadCsv(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
-        csvService.uploadCsv(file)
-        return ResponseEntity.ok("File uploaded successfully")
+    suspend fun uploadCSV(@RequestParam("file") file: MultipartFile) {
+        coroutineScope {
+            csvService.parseCsv(file)
+        }
     }
 }

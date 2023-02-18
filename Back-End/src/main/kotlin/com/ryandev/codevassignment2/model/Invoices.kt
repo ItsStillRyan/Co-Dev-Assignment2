@@ -6,20 +6,21 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import java.util.*
+import java.time.LocalDateTime
 @Entity
 @Table(name = "invoices")
 data class Invoices(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "id")
-        val id: Int? = null,
-        val invoiceNo: Int,
+        val id: Long? = null,
+        val invoiceNo: String,
         val stockCode: String,
         val description: String,
         val quantity: Int,
-        val invoiceDate: String,
+        @Column(columnDefinition = "TIMESTAMP")
+        val invoiceDate: LocalDateTime,
         val unitPrice: Double,
-        val customerID: Int,
+        val customerID: String,
         val country: String
 )

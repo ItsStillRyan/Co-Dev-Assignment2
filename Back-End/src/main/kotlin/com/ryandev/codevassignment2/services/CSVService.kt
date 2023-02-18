@@ -1,63 +1,60 @@
 package com.ryandev.codevassignment2.services
 
+import com.opencsv.CSVReaderBuilder
 import com.ryandev.codevassignment2.model.Invoices
-import com.ryandev.codevassignment2.repository.CsvRepository
 import com.ryandev.codevassignment2.repository.InvoiceRepository
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVParser
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStream
+import kotlinx.coroutines.*
 import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
-class CSVService(
-    private val csvRepository: CsvRepository
-) {
-    fun uploadCsv(file: MultipartFile) {
-        val csvDataList = csvToInvoices(file.inputStream)
-        csvRepository.insertCsvData(csvDataList)
+class CsvService(private val invoiceRepository: InvoiceRepository) {
+
+    suspend fun parseCsv(file: MultipartFile) {
+        val reader = CSVReaderBuilder(InputStreamReader(file.inputStream)).withSkipLines(1).build()
+
+        val invoices = mutableListOf<Deferred<Invoices>>()
+
+        while (true) {
+            val nextLine = reader.readNext() ?: break
+
+            val formatter = DateTimeFormatter.ofPattern("M/d/yyyy H:m")
+            val invoice = Invoices(
+                invoiceNo = nextLine[0],
+                stockCode = nextLine[1],
+                description = nextLine[2],
+                quantity = nextLine[3].toInt(),
+                invoiceDate = LocalDateTime.parse(nextLine[4], formatter),
+                unitPrice = nextLine[5].toDouble(),
+                customerID = nextLine[6],
+                country = nextLine[7]
+            )
+
+            val deferredInvoice = GlobalScope.async {
+                invoiceRepository.save(invoice)
+            }
+
+            invoices.add(deferredInvoice)
+
+            if (invoices.size >= 1000) {
+                invoices.awaitAll()
+                invoices.clear()
+            }
+        }
+
+        invoices.awaitAll()
     }
 
-    fun csvToInvoices(inS: InputStream): List<Invoices> {
-        return try {
-            BufferedReader(InputStreamReader(inS, StandardCharsets.UTF_8)).use { fileReader ->
-                CSVParser(fileReader, CSVFormat.RFC4180.builder()
-                    .setHeader()
-                    .setSkipHeaderRecord(true)
-                    .setIgnoreHeaderCase(true)
-                    .setAllowMissingColumnNames(false)
-                    .setCommentMarker('#')
-                    .setIgnoreEmptyLines(true)
-                    .setIgnoreSurroundingSpaces(true)
-                    .setTrim(true)
-                    .build()).use { csvParser ->
-
-                    val ivc = ArrayList<Invoices>()
-                    val csvRecords = csvParser.records
-
-                    for (csvRecord in csvRecords) {
-                        val invoice = Invoices(
-                            csvRecord["id"].toInt(),
-                            csvRecord["invoiceNo"].toInt(),
-                            csvRecord["stockCode"],
-                            csvRecord["description"],
-                            csvRecord["quantity"].toInt(),
-                            csvRecord["invoiceDate"],
-                            csvRecord["unitPrice"].toDouble(),
-                            csvRecord["customerID"].toInt(),
-                            csvRecord["country"]
-                        )
-                        ivc.add(invoice)
-                    }
-                    ivc
-                }
-            }
-        } catch (e: IOException) {
-            throw RuntimeException("Failed" + e.message)
-        }
+    fun getCsvData(page: Int, pageSize: Int): List<Invoices> {
+        val pageable = PageRequest.of(page, pageSize)
+        val csvDataPage = invoiceRepository.findAll(pageable)
+        return csvDataPage.content
     }
 }
+
+
+
