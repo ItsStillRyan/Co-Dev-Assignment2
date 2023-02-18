@@ -36,13 +36,20 @@ export default function TableComp({}: Props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   useEffect(() => {
-    (async () => {
+    const fetchData = async () => {
       const result = await axios(
         "http://localhost:8080/csv/all"
       );
       setData(result.data);
-    })();
+    };
+
+    fetchData();
+
+    const intervalId = setInterval(fetchData, 2000); // Update every 5 seconds
+
+    return () => clearInterval(intervalId);
   }, []);
+
 
   const columns: readonly Column[] = [
     { id: "id", label: "Id", minWidth: 20 },
