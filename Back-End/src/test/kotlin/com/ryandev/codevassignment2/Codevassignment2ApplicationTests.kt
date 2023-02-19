@@ -1,6 +1,5 @@
 package com.ryandev.codevassignment2
 
-import com.ryandev.codevassignment2.repository.InvoiceRepository
 import com.ryandev.codevassignment2.services.CsvService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -10,7 +9,8 @@ import org.springframework.mock.web.MockMultipartFile
 
 @SpringBootTest
 class Codevassignment2ApplicationTests (
-	@Autowired private val csvService: CsvService) {
+	@Autowired private val csvService: CsvService
+) {
 
 	@Test
 	suspend fun `test successful CSV upload`() {
@@ -66,4 +66,45 @@ class Codevassignment2ApplicationTests (
 		assertEquals(0, invoices.size)
 	}
 
+	@Test
+	suspend fun `test CSV with missing required fields`() {
+		val fileContent = """
+        InvoiceNo,StockCode,Description,Quantity,InvoiceDate,UnitPrice
+        536365,85123A,WHITE HANGING HEART T-LIGHT HOLDER,6,12/1/2010 8:26,2.55
+    """.trimIndent()
+
+		val file = MockMultipartFile("file", "test.csv", "text/csv", fileContent.toByteArray())
+		csvService.parseCsv(file)
+
+		val invoices = csvService.getCsvData(0, 10)
+		assertEquals(0, invoices.size)
+	}
+
+	@Test
+	suspend fun `test CSV with invalid data type`() {
+		val fileContent = """
+        InvoiceNo,StockCode,Description,Quantity,InvoiceDate,UnitPrice,CustomerID,Country
+        536365,85123A,WHITE HANGING HEART T-LIGHT HOLDER,6,12/1/2010 8:26,invalid,17850,United Kingdom
+    """.trimIndent()
+
+		val file = MockMultipartFile("file", "test.csv", "text/csv", fileContent.toByteArray())
+		csvService.parseCsv(file)
+
+		val invoices = csvService.getCsvData(0, 10)
+		assertEquals(0, invoices.size)
+	}
+
+	@Test
+	suspend fun `test CSV with invalid column names`() {
+		val fileContent = """
+        InvoiceNo,StockCode,Description,Quantity,InvalidColumnName,UnitPrice,CustomerID,Country
+        536365,85123A,WHITE HANGING HEART T-LIGHT HOLDER,6,12/1/2010 8:26,2.55,17850,United Kingdom
+    """.trimIndent()
+
+		val file = MockMultipartFile("file", "test.csv", "text/csv", fileContent.toByteArray())
+		csvService.parseCsv(file)
+
+		val invoices = csvService.getCsvData(0, 10)
+		assertEquals(0, invoices.size)
+	}
 }
