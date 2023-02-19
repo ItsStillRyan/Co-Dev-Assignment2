@@ -5,20 +5,8 @@
 .App h1{
   margin-bottom: 2%;
 }
-/* 
-.table-contain{
-  width: 80vw;
-  margin: auto;
-  margin-top: 5%;
-}
- */
 .upload-progress-contain {
   text-align: left;
-}
-.upload-progress-inner-contain {
-}
-.upload-progress-uploadbar {
-  
 }
 .upload-progress-progressbar {
   margin-top: 10%;

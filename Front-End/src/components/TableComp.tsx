@@ -109,7 +109,6 @@ export default function TableComp({}: Props) {
                 sx={{ width: "100%", mb: 2 }}
               />
             </div>
-
             <Paper sx={{ width: "100%", overflow: "hidden" }}>
               <TableContainer sx={{ maxHeight: 800 }}>
                 <Table stickyHeader aria-label="sticky table">

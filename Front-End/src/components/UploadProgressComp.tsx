@@ -15,7 +15,7 @@ export default function UploadProgressComp({ dataLength }: Props) {
 
   const handleFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
-    setFile(file)
+    setFile(file);
     setSelectedFile(file);
   };
 
@@ -26,7 +26,6 @@ export default function UploadProgressComp({ dataLength }: Props) {
         setLoading(false);
       }, 3000);
     }
-
     return () => clearTimeout(timer);
   }, [dataLength]);
 
@@ -35,7 +34,6 @@ export default function UploadProgressComp({ dataLength }: Props) {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
-
       axios.post("http://localhost:8080/csv/upload", formData, {
         onUploadProgress: (progressEvent) => {
           const total = progressEvent.total ?? 1;
@@ -53,9 +51,6 @@ export default function UploadProgressComp({ dataLength }: Props) {
           <Form.Label>Upload CSV File</Form.Label>
           <Form.Control type="file" onChange={handleFileInput} />
         </Form.Group>
-        {/* <Button variant="primary" onClick={uploadFile}>
-          Upload
-        </Button> */}
         <Button
           variant="contained"
           onClick={uploadFile}
