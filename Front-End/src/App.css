@@ -2,19 +2,25 @@
   text-align: center;
   margin: 3%;
 }
-
+.App h1{
+  margin-bottom: 2%;
+}
+/* 
 .table-contain{
   width: 80vw;
   margin: auto;
   margin-top: 5%;
 }
-
-.upload-progress-contain{
-  margin: auto;
- text-align: left;
- width: 80vw;
+ */
+.upload-progress-contain {
+  text-align: left;
 }
-
-.upload-progress-inner-contain h3{
-  margin-bottom: 2%;
+.upload-progress-inner-contain {
+}
+.upload-progress-uploadbar {
+  
+}
+.upload-progress-progressbar {
+  margin-top: 10%;
+  text-align: center;
 }
