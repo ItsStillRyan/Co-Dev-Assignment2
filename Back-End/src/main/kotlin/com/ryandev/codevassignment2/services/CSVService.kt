@@ -14,14 +14,12 @@ import java.time.format.DateTimeFormatter
 
 @Service
 class CsvService(private val invoiceRepository: InvoiceRepository) {
-
     suspend fun parseCsv(file: MultipartFile): Flow<Int> = flow {
         val reader = CSVReaderBuilder(InputStreamReader(file.inputStream)).withSkipLines(1).build()
         var progress = 0
         var count = 0
         while (true) {
             val nextLine = reader.readNext() ?: break
-
             val formatter = DateTimeFormatter.ofPattern("M/d/yyyy H:m")
             val invoice = Invoices(
                 invoiceNo = nextLine[0],
@@ -35,7 +33,6 @@ class CsvService(private val invoiceRepository: InvoiceRepository) {
             )
             invoiceRepository.save(invoice)
             count++
-
             if (count >= 10000) {
                 progress += 10
                 count = 0
