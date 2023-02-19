@@ -49,7 +49,7 @@ export default function UploadProgressComp({ dataLength }: Props) {
       <div className="upload-progress-uploadbar">
         <Form.Group controlId="formFile" className="mb-3">
           <Form.Label>Upload CSV File</Form.Label>
-          <Form.Control type="file" onChange={handleFileInput} />
+          <Form.Control type="file" onChange={handleFileInput} accept=".csv"/>
         </Form.Group>
         <Button
           variant="contained"
